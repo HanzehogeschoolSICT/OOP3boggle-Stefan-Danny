@@ -15,7 +15,7 @@ public class Main {
         Scanner scanner = new Scanner(new File("rsc/wordlist.txt"));
         while (scanner.hasNextLine()) {
             String word = scanner.nextLine();
-            if (word.length() > 3) {
+            if (word.length() > 3) {    // Load only words larger than 3 characters
                 wordTree.addWord(word);
                 wordSet.add(word);
             }
@@ -26,7 +26,5 @@ public class Main {
         System.out.println(boggle.toString());
         List<String> words = boggle.findWords(wordTree);
         System.out.println(words);
-
-        for (String word : words) assert wordSet.contains(word);
     }
 }

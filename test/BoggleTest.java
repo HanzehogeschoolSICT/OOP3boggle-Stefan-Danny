@@ -24,8 +24,6 @@ public class BoggleTest {
         Boggle boggle = new Boggle(15);
         List<String> words = boggle.findWords(wordTree);
 
-        for (String word : words) {
-            if (!wordSet.contains(word)) throw new AssertionError();
-        }
+        for (String word : words) assert wordSet.contains(word);
     }
 }
