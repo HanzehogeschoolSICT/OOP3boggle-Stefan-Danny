@@ -1,5 +1,7 @@
 package net.sentientturtle.boggle;
 
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import net.sentientturtle.boggle.tree.TreeNode;
 import net.sentientturtle.boggle.tree.WordTree;
 
@@ -9,7 +11,11 @@ import java.util.Random;
 
 public class Boggle {
     private Random random = new Random(5);
-    private char[][] playingField;
+    public char[][] playingField;
+
+
+
+
 
     public Boggle(int fieldSize) {
         assert fieldSize > 0;
