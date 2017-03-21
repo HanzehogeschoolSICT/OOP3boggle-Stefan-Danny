@@ -2,6 +2,8 @@ package net.sentientturtle.boggle;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -37,6 +39,7 @@ public class Main extends Application {
     Stage stage;
     BorderPane borderPane;
     Scene scene;
+    List<String> words;
 
 
     private void searchWords()throws IOException{
@@ -54,7 +57,7 @@ public class Main extends Application {
             }
         }
         scanner.close();
-        List<String> words = boggle.findWords(wordTree);
+        words = boggle.findWords(wordTree);
         System.out.println(words);
 
     }
@@ -63,6 +66,11 @@ public class Main extends Application {
 
     private void createBoard(int size){
         boggle = new Boggle(size);
+        try {
+            searchWords();
+        }catch (IOException ex){
+            System.out.println("IOExeption error!");
+        }
 
         pane = new GridPane();
 
@@ -100,7 +108,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-
+        createBoard(3);
 
 
 
@@ -132,12 +140,25 @@ public class Main extends Application {
         HBox hBox = new HBox();
         hBox.getChildren().addAll(textSize, setField);
 
+        HBox hBox1 = new HBox();
+
         BorderPane borderPane = new BorderPane();
         borderPane.setCenter(pane);
         borderPane.setBottom(hBox);
         borderPane.setTop(menuBar);
 
 
+        ListView<String> listView = new ListView<String>();
+        ObservableList<String> items = FXCollections.observableArrayList();
+        for (String e: words){
+            System.out.println(e);
+            items.add(e);
+        }
+
+        listView.setItems(items);
+
+        hBox1.getChildren().add(listView);
+        borderPane.setRight(hBox1);
 
 
 
@@ -223,24 +244,24 @@ public class Main extends Application {
 
 
 
-//    WordTree wordTree = new WordTree();
-//    HashSet<String> wordSet = new HashSet<>();
-//    Scanner scanner = new Scanner(new File("rsc/wordlist.txt"));
-//        while(scanner.hasNextLine())
-//
-//    {
-//        String word = scanner.nextLine();
-//        if (word.length() > 2) {    // Load only words larger than 3 characters
-//            wordTree.addWord(word);
-//            wordSet.add(word);
-//        }
-//    }
-//        scanner.close();
-//
+    WordTree wordTree = new WordTree();
+    HashSet<String> wordSet = new HashSet<>();
+    Scanner scanner = new Scanner(new File("rsc/wordlist.txt"));
+        while(scanner.hasNextLine())
+
+    {
+        String word = scanner.nextLine();
+        if (word.length() > 2) {    // Load only words larger than 3 characters
+            wordTree.addWord(word);
+            wordSet.add(word);
+        }
+    }
+        scanner.close();
+
 //        Boggle boggle = new Boggle(15);
-//        System.out.println(boggle.toString());
-//        List<String> words = boggle.findWords(wordTree);
-//        System.out.println(words);
+        System.out.println(boggle.toString());
+        List<String> words = boggle.findWords(wordTree);
+        System.out.println(words);
     }
 
 }
