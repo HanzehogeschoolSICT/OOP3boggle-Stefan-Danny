@@ -40,13 +40,20 @@ public class Main extends Application {
     BorderPane borderPane;
     Scene scene;
     List<String> words;
+    HBox hBox1;
+    private boolean boolList = false;
+    ListView<String> listView;
+    ObservableList<String> items;
+    WordTree wordTree;
+    HashSet<String> wordSet;
+    Scanner scanner;
 
 
     private void searchWords()throws IOException{
 
-        WordTree wordTree = new WordTree();
-        HashSet<String> wordSet = new HashSet<>();
-        Scanner scanner = new Scanner(new File("rsc/wordlist.txt"));
+        wordTree = new WordTree();
+        wordSet = new HashSet<>();
+        scanner = new Scanner(new File("rsc/wordlist.txt"));
         while(scanner.hasNextLine())
 
         {
@@ -59,6 +66,20 @@ public class Main extends Application {
         scanner.close();
         words = boggle.findWords(wordTree);
         System.out.println(words);
+
+    }
+
+    private void viewList(){
+        listView = new ListView<String>();
+        items = FXCollections.observableArrayList();
+        for (String e : words) {
+            System.out.println(e);
+            items.add(e);
+        }
+
+        listView.setItems(items);
+        hBox1.getChildren().addAll(listView);
+
 
     }
 
@@ -140,7 +161,7 @@ public class Main extends Application {
         HBox hBox = new HBox();
         hBox.getChildren().addAll(textSize, setField);
 
-        HBox hBox1 = new HBox();
+        hBox1 = new HBox();
 
         BorderPane borderPane = new BorderPane();
         borderPane.setCenter(pane);
@@ -148,17 +169,7 @@ public class Main extends Application {
         borderPane.setTop(menuBar);
 
 
-        ListView<String> listView = new ListView<String>();
-        ObservableList<String> items = FXCollections.observableArrayList();
-        for (String e: words){
-            System.out.println(e);
-            items.add(e);
-        }
 
-        listView.setItems(items);
-
-        hBox1.getChildren().add(listView);
-        borderPane.setRight(hBox1);
 
 
 
@@ -191,9 +202,9 @@ public class Main extends Application {
         pane2.getChildren().addAll(textSize, setField);
 
 
+
         //Create new scene
         scene = new Scene(borderPane);
-
         Scene scene2 = new Scene(pane2,200,100);
         newStage = new Stage();
         newStage.setScene(scene2);
@@ -217,7 +228,32 @@ public class Main extends Application {
         });
 
 
+        viewWords.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try{
+                    searchWords();
+                }catch (IOException ex){
+                    System.out.println("IO exception error");
+                }
 
+                hBox1 = new HBox();
+                BorderPane borderPane = new BorderPane();
+                borderPane.setCenter(pane);
+                borderPane.setBottom(hBox);
+                borderPane.setTop(menuBar);
+                if (boolList ==false){
+                    viewList();
+                    borderPane.setRight(hBox1);
+                    boolList = true;
+                }else{
+                    boolList = false;
+                }
+                scene = new Scene(borderPane);
+                stage.setScene(scene);
+
+            }
+        });
 
         setField.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -232,11 +268,11 @@ public class Main extends Application {
                 scene = new Scene(borderPane);
                 stage.setScene(scene);
                 newStage.close();
-                try {
-                    searchWords();
-                }catch (IOException ex){
-                    System.out.println("IOExeption error!");
-                }
+//                try {
+//                    searchWords();
+//                }catch (IOException ex){
+//                    System.out.println("IOExeption error!");
+//                }
             }
         });
 
