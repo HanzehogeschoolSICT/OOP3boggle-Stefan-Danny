@@ -47,6 +47,7 @@ public class Main extends Application {
     WordTree wordTree;
     HashSet<String> wordSet;
     Scanner scanner;
+    Label labelsize;
 
 
     private void searchWords()throws IOException{
@@ -129,7 +130,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-        createBoard(3);
+//        createBoard(3);
 
 
 
@@ -140,6 +141,7 @@ public class Main extends Application {
 
         TextField textSize = new TextField();
         setField = new Button("Set");
+        labelsize = new Label("Vul hier de grootte van het bord in:");
 
 //        setField.setOnAction(e-> ButtonClicked(e));
 
@@ -169,43 +171,16 @@ public class Main extends Application {
         borderPane.setTop(menuBar);
 
 
-
-
-
-
-
-//        Boggle boggle = new Boggle(15);
-//        GridPane pane = new GridPane();
-//
-//
-//
-//        for(int i = 0; i<boggle.playingField.length;i++){
-//            for(int j=0;j<boggle.playingField.length;j++){
-//                String character = Character.toString(boggle.playingField[i][j]);
-//                System.out.println(character);
-//                Label text = new Label(character);
-//                text.setMinWidth(300/10.0);
-//                text.setMaxWidth(300/10.0);
-//                text.setMinHeight(300/10.0);
-//                text.setMaxHeight(300/10.0);
-//                text.setAlignment(Pos.CENTER);
-//                pane.add(text,j,i);
-//        }
-//
-//        }
-
-
-
         FlowPane pane2 = new FlowPane();
         pane2.setVgap(10);
-        pane2.setStyle("-fx-background-color: red;-fx-padding: 10px;");
-        pane2.getChildren().addAll(textSize, setField);
+        pane2.setStyle("-fx-padding: 10px;");
+        pane2.getChildren().addAll(labelsize ,textSize, setField);
 
 
 
         //Create new scene
-        scene = new Scene(borderPane);
-        Scene scene2 = new Scene(pane2,200,100);
+        scene = new Scene(borderPane,300,300);
+        Scene scene2 = new Scene(pane2,300,80);
         newStage = new Stage();
         newStage.setScene(scene2);
         newStage.initModality(Modality.APPLICATION_MODAL);
@@ -213,9 +188,10 @@ public class Main extends Application {
         // set the Scene to stage
         stage.setScene(scene);
 
+
         stage.setTitle("Boggle");
 
-        stage.show();
+        newStage.show();
 
 
         newBoard.setOnAction(event -> newStage.showAndWait());
@@ -268,6 +244,7 @@ public class Main extends Application {
                 scene = new Scene(borderPane);
                 stage.setScene(scene);
                 newStage.close();
+                stage.show();
 //                try {
 //                    searchWords();
 //                }catch (IOException ex){
@@ -280,24 +257,24 @@ public class Main extends Application {
 
 
 
-    WordTree wordTree = new WordTree();
-    HashSet<String> wordSet = new HashSet<>();
-    Scanner scanner = new Scanner(new File("rsc/wordlist.txt"));
-        while(scanner.hasNextLine())
-
-    {
-        String word = scanner.nextLine();
-        if (word.length() > 2) {    // Load only words larger than 3 characters
-            wordTree.addWord(word);
-            wordSet.add(word);
-        }
-    }
-        scanner.close();
-
-//        Boggle boggle = new Boggle(15);
-        System.out.println(boggle.toString());
-        List<String> words = boggle.findWords(wordTree);
-        System.out.println(words);
+//    WordTree wordTree = new WordTree();
+//    HashSet<String> wordSet = new HashSet<>();
+//    Scanner scanner = new Scanner(new File("rsc/wordlist.txt"));
+//        while(scanner.hasNextLine())
+//
+//    {
+//        String word = scanner.nextLine();
+//        if (word.length() > 2) {    // Load only words larger than 3 characters
+//            wordTree.addWord(word);
+//            wordSet.add(word);
+//        }
+//    }
+//        scanner.close();
+//
+////        Boggle boggle = new Boggle(15);
+//        System.out.println(boggle.toString());
+//        List<String> words = boggle.findWords(wordTree);
+//        System.out.println(words);
     }
 
 }
