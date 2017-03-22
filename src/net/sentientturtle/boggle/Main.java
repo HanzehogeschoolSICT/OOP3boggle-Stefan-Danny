@@ -130,14 +130,6 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-//        createBoard(3);
-
-
-
-
-
-
-
 
         TextField textSize = new TextField();
         setField = new Button("Set");
@@ -245,11 +237,6 @@ public class Main extends Application {
                 stage.setScene(scene);
                 newStage.close();
                 stage.show();
-//                try {
-//                    searchWords();
-//                }catch (IOException ex){
-//                    System.out.println("IOExeption error!");
-//                }
             }
         });
 
