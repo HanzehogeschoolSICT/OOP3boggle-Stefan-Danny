@@ -77,13 +77,7 @@ public class Main extends Application {
         hBox1.getChildren().addAll(listView);
     }
 
-
-
-    private void createBoard(int size){
-        boggle = new Boggle(size);
-        try { searchWords();
-        }catch (IOException ex){ System.out.println("IOExeption error!");}
-        pane = new GridPane();
+    private void drawingBoard(){
         for(int i = 0; i<boggle.playingField.length;i++){
             for(int j=0;j<boggle.playingField.length;j++){
                 String character = Character.toString(boggle.playingField[i][j]);
@@ -95,6 +89,16 @@ public class Main extends Application {
                 pane.add(text,j,i);
             }
         }
+    }
+
+
+
+    private void createBoard(int size){
+        boggle = new Boggle(size);
+        try { searchWords();
+        }catch (IOException ex){ System.out.println("IOExeption error!");}
+        pane = new GridPane();
+        drawingBoard();
     }
 
 
