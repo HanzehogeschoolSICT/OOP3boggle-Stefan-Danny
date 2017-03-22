@@ -73,44 +73,28 @@ public class Main extends Application {
             System.out.println(e);
             items.add(e);
         }
-
         listView.setItems(items);
         hBox1.getChildren().addAll(listView);
-
-
     }
 
 
 
     private void createBoard(int size){
         boggle = new Boggle(size);
-        try {
-            searchWords();
-        }catch (IOException ex){
-            System.out.println("IOExeption error!");
-        }
-
+        try { searchWords();
+        }catch (IOException ex){ System.out.println("IOExeption error!");}
         pane = new GridPane();
-
-
-
         for(int i = 0; i<boggle.playingField.length;i++){
             for(int j=0;j<boggle.playingField.length;j++){
                 String character = Character.toString(boggle.playingField[i][j]);
                 System.out.println(character);
                 Label text = new Label(character);
                 text.setMinWidth(300/10.0);
-                text.setMaxWidth(300/10.0);
-                text.setMinHeight(300/10.0);
                 text.setMaxHeight(300/10.0);
                 text.setAlignment(Pos.CENTER);
                 pane.add(text,j,i);
             }
-
         }
-        pane.setGridLinesVisible(true);
-        System.out.println(boggle.toString());
-
     }
 
 
@@ -229,6 +213,7 @@ public class Main extends Application {
                 borderPane.setCenter(pane);
                 borderPane.setBottom(hBox);
                 borderPane.setTop(menuBar);
+                pane.setGridLinesVisible(true);
                 scene = new Scene(borderPane);
                 stage.setScene(scene);
                 newStage.close();
