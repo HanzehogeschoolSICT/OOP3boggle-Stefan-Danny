@@ -51,12 +51,10 @@ public class Main extends Application {
 
 
     private void searchWords()throws IOException{
-
         wordTree = new WordTree();
         wordSet = new HashSet<>();
         scanner = new Scanner(new File("rsc/wordlist.txt"));
         while(scanner.hasNextLine())
-
         {
             String word = scanner.nextLine();
             if (word.length() > 2) {    // Load only words larger than 3 characters
@@ -66,8 +64,6 @@ public class Main extends Application {
         }
         scanner.close();
         words = boggle.findWords(wordTree);
-        System.out.println(words);
-
     }
 
     private void viewList(){
