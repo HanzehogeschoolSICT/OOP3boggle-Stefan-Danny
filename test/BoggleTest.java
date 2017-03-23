@@ -32,15 +32,16 @@ public class BoggleTest {
         for (String word : words) assert wordSet.contains(word);
     }
 
-    //@Test
+    @Test
     public void benchmarkSearch() {
         Boggle boggle;
-        for (int i = 5; i < 12; i++) {
-            int boardSize = (int) Math.pow(2, i);
-            boggle = new Boggle(boardSize);
+        for (int i = 64; i <= 1600; i+= 64) {
+            boggle = new Boggle(i);
+            System.gc();
             long current = System.currentTimeMillis();
             boggle.findWords(wordTree);
-            System.out.println(boardSize + "\t" + (System.currentTimeMillis() - current));
+            long duration = (System.currentTimeMillis() - current);
+            System.out.println(i + "\t" + (i * i) + "\t" + duration);
         }
     }
 }
