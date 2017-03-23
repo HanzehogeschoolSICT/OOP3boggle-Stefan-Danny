@@ -1,12 +1,11 @@
 package net.sentientturtle.boggle;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,52 +13,45 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import net.sentientturtle.boggle.tree.WordTree;
+import net.sentientturtle.boggle.util.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Main extends Application {
-
     private GridPane pane;
     private Boggle boggle;
     private int getSize;
-    Button setField;
-    Stage newStage;
-    Stage stage;
-    BorderPane borderPane;
-    Scene scene;
-    List<String> words;
-    HBox hBox1;
+    private Stage newStage;
+    private Scene scene;
+    private Map<String, Collection<Pair<Integer, Integer>>> words;
+    private ArrayList<Pair<Integer, Integer>> selectedLetters;
+    private HBox hBox1;
     private boolean boolList = false;
-    ListView<String> listView;
-    ObservableList<String> items;
-    WordTree wordTree;
-    HashSet<String> wordSet;
-    Scanner scanner;
-    Label labelsize;
+
+    public Main() {
+        selectedLetters = new ArrayList<>();
+    }
 
 
     private void searchWords()throws IOException{
-        wordTree = new WordTree();
-        wordSet = new HashSet<>();
-        scanner = new Scanner(new File("rsc/wordlist.txt"));
+        WordTree wordTree = new WordTree();
+        Scanner scanner = new Scanner(new File("rsc/wordlist.txt"));
         while(scanner.hasNextLine())
         {
             String word = scanner.nextLine();
             if (word.length() > 2) {    // Load only words larger than 3 characters
                 wordTree.addWord(word);
-                wordSet.add(word);
             }
         }
         scanner.close();
@@ -67,26 +59,32 @@ public class Main extends Application {
     }
 
     private void viewList(){
-        listView = new ListView<String>();
-        items = FXCollections.observableArrayList();
-        for (String e : words) {
-            System.out.println(e);
-            items.add(e);
-        }
+        ListView<String> listView = new ListView<>();
+        ObservableList<String> items = FXCollections.observableArrayList();
+        items.addAll(words.keySet());
         listView.setItems(items);
         hBox1.getChildren().addAll(listView);
+        listView.getSelectionModel().getSelectedItems().addListener((ListChangeListener<String>) c -> {
+            selectedLetters.clear();
+            c.getList().stream().map((Function<String, Collection<Pair<Integer, Integer>>>) s -> words.get(s)).forEach(selectedLetters::addAll);
+            drawBoard();
+        });
     }
 
-    private void drawingBoard(){
-        for(int i = 0; i<boggle.playingField.length;i++){
-            for(int j=0;j<boggle.playingField.length;j++){
-                String character = Character.toString(boggle.playingField[i][j]);
-                System.out.println(character);
+    private void drawBoard(){
+        pane.getChildren().clear();
+        for(int x = 0; x<boggle.playingField.length;x++){
+            for(int y=0;y<boggle.playingField.length;y++){
+                String character = Character.toString(boggle.playingField[x][y]);
+                //System.out.println(character);
                 Label text = new Label(character);
                 text.setMinWidth(300/10.0);
                 text.setMaxHeight(300/10.0);
                 text.setAlignment(Pos.CENTER);
-                pane.add(text,j,i);
+                if (selectedLetters.contains(new Pair<>(x, y))) {
+                    text.setStyle("-fx-background-color: darkslategray");
+                }
+                pane.add(text,y,x);
             }
         }
     }
@@ -98,7 +96,7 @@ public class Main extends Application {
         try { searchWords();
         }catch (IOException ex){ System.out.println("IOExeption error!");}
         pane = new GridPane();
-        drawingBoard();
+        drawBoard();
     }
 
 
@@ -108,16 +106,11 @@ public class Main extends Application {
         launch(args);
     }
 
-
-
-
     @Override
     public void start(Stage stage) throws IOException {
-
-
         TextField textSize = new TextField();
-        setField = new Button("Set");
-        labelsize = new Label("Vul hier de grootte van het bord in:");
+        Button setField = new Button("Set");
+        Label labelsize = new Label("Vul hier de grootte van het bord in:");
 
 //        setField.setOnAction(e-> ButtonClicked(e));
 
@@ -150,7 +143,7 @@ public class Main extends Application {
         FlowPane pane2 = new FlowPane();
         pane2.setVgap(10);
         pane2.setStyle("-fx-padding: 10px;");
-        pane2.getChildren().addAll(labelsize ,textSize, setField);
+        pane2.getChildren().addAll(labelsize,textSize, setField);
 
 
 
@@ -194,7 +187,7 @@ public class Main extends Application {
                 borderPane.setCenter(pane);
                 borderPane.setBottom(hBox);
                 borderPane.setTop(menuBar);
-                if (boolList ==false){
+                if (!boolList){
                     viewList();
                     borderPane.setRight(hBox1);
                     boolList = true;
@@ -224,29 +217,6 @@ public class Main extends Application {
                 stage.show();
             }
         });
-
-
-
-
-
-//    WordTree wordTree = new WordTree();
-//    HashSet<String> wordSet = new HashSet<>();
-//    Scanner scanner = new Scanner(new File("rsc/wordlist.txt"));
-//        while(scanner.hasNextLine())
-//
-//    {
-//        String word = scanner.nextLine();
-//        if (word.length() > 2) {    // Load only words larger than 3 characters
-//            wordTree.addWord(word);
-//            wordSet.add(word);
-//        }
-//    }
-//        scanner.close();
-//
-////        Boggle boggle = new Boggle(15);
-//        System.out.println(boggle.toString());
-//        List<String> words = boggle.findWords(wordTree);
-//        System.out.println(words);
     }
 
 }

@@ -1,13 +1,10 @@
 package net.sentientturtle.boggle;
 
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
 import net.sentientturtle.boggle.tree.TreeNode;
 import net.sentientturtle.boggle.tree.WordTree;
+import net.sentientturtle.boggle.util.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Boggle {
     private Random random = new Random(5);
@@ -20,11 +17,7 @@ public class Boggle {
     public Boggle(int fieldSize) {
         assert fieldSize > 0;
         this.playingField = new char[fieldSize][fieldSize];
-        for (int i = 0; i < playingField.length; i++) {
-            for (int j = 0; j < playingField[i].length; j++) {
-                playingField[i][j] = (char) (random.nextInt(26) + 97);
-            }
-        }
+        randomize();
     }
 
     public void randomize() {
@@ -35,8 +28,11 @@ public class Boggle {
         }
     }
 
-    public List<String> findWords(WordTree tree) {
-        ArrayList<String> wordList = new ArrayList<>();
+    public Map<String, Collection<Pair<Integer, Integer>>> findWords(WordTree tree) {
+        return findWords(tree, new HashMap<>(), new ArrayDeque<>());
+    }
+
+    public Map<String, Collection<Pair<Integer, Integer>>> findWords(WordTree tree, Map<String, Collection<Pair<Integer, Integer>>> wordMap, Deque<Pair<Integer, Integer>> positionStack) {
         boolean[][] lookedAt = new boolean[playingField.length][playingField.length];
         for (int i = 0; i < playingField.length; i++) {
             for (int j = 0; j < playingField.length; j++) {
@@ -47,31 +43,33 @@ public class Boggle {
         StringBuilder builder = new StringBuilder();
         for (int x = 0; x < playingField.length; x++) {
             for (int y = 0; y < playingField.length; y++) {
-                findWordFrom(x, y, wordList, builder, lookedAt, tree.getRoot());
+                findWordFrom(x, y, wordMap, builder, positionStack, lookedAt, tree.getRoot());
             }
         }
-        return wordList;
+        return wordMap;
     }
 
-    private void findWordFrom(int x, int y, List<String> wordList, StringBuilder wordStack, boolean[][] lookedAt, TreeNode subtree) {
+    private void findWordFrom(int x, int y, Map<String, Collection<Pair<Integer, Integer>>> wordMap, StringBuilder wordStack, Deque<Pair<Integer, Integer>> positionStack, boolean[][] lookedAt, TreeNode subtree) {
         if ((x < 0) || (y < 0) || (x >= playingField.length) || (y >= playingField.length) || lookedAt[x][y]) return;
         lookedAt[x][y] = true;
+        positionStack.addLast(new Pair<>(x, y));
         TreeNode node = subtree.getNode(playingField[x][y]);
         wordStack.append(playingField[x][y]);
         if (node != null) {
             if (node.isWord()) {
-                wordList.add(wordStack.toString());
+                wordMap.put(wordStack.toString(), new ArrayList<>(positionStack));
             }
-            findWordFrom(x - 1, y - 1, wordList, wordStack, lookedAt, node);             // Top left
-            findWordFrom(x - 1, y, wordList, wordStack, lookedAt, node);                    // Left
-            findWordFrom(x - 1, y + 1, wordList, wordStack, lookedAt, node);             // Bottom left
-            findWordFrom(x, y - 1, wordList, wordStack, lookedAt, node);                    // Top
-            findWordFrom(x, y + 1, wordList, wordStack, lookedAt, node);                    // Bottom
-            findWordFrom(x + 1, y - 1, wordList, wordStack, lookedAt, node);             // Top right
-            findWordFrom(x + 1, y, wordList, wordStack, lookedAt, node);                    // Right
-            findWordFrom(x + 1, y + 1, wordList, wordStack, lookedAt, node);             // Bottom right
+            findWordFrom(x - 1, y - 1, wordMap, wordStack, positionStack, lookedAt, node);             // Top left
+            findWordFrom(x - 1, y, wordMap, wordStack, positionStack, lookedAt, node);                    // Left
+            findWordFrom(x - 1, y + 1, wordMap, wordStack, positionStack, lookedAt, node);             // Bottom left
+            findWordFrom(x, y - 1, wordMap, wordStack, positionStack, lookedAt, node);                    // Top
+            findWordFrom(x, y + 1, wordMap, wordStack, positionStack, lookedAt, node);                    // Bottom
+            findWordFrom(x + 1, y - 1, wordMap, wordStack, positionStack, lookedAt, node);             // Top right
+            findWordFrom(x + 1, y, wordMap, wordStack, positionStack, lookedAt, node);                    // Right
+            findWordFrom(x + 1, y + 1, wordMap, wordStack, positionStack, lookedAt, node);             // Bottom right
         }
         wordStack.setLength(wordStack.length() - 1);
+        if (!positionStack.removeLast().is(x, y)) throw new IllegalStateException("Position stack corrupt!");
         lookedAt[x][y] = false;
     }
 
