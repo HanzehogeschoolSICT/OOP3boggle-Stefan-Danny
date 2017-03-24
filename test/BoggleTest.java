@@ -35,7 +35,7 @@ public class BoggleTest {
     @Test
     public void benchmarkSearch() {
         Boggle boggle;
-        for (int i = 64; i <= 1600; i+= 64) {
+        for (int i = 64; i <= 35*64; i+= 64) {
             boggle = new Boggle(i);
             System.gc();
             long current = System.currentTimeMillis();

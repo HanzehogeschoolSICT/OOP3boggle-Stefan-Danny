@@ -35,93 +35,67 @@ public class Main extends Application {
     private GridPane pane;
     private Boggle boggle;
     private int getSize;
-    Button setField;
-    Stage newStage;
-    Stage stage;
-    BorderPane borderPane;
-    Scene scene;
-    Collection<String> words;
-    HBox hBox1;
+    private Stage newStage;
+    private Scene scene;
+    private Collection<String> words;
+    private HBox hBox1;
     private boolean boolList = false;
-    ListView<String> listView;
-    ObservableList<String> items;
-    WordTree wordTree;
-    HashSet<String> wordSet;
-    Scanner scanner;
-    Label labelsize;
 
 
-    private void searchWords()throws IOException{
-        wordTree = new WordTree();
-        wordSet = new HashSet<>();
-        scanner = new Scanner(new File("rsc/wordlist.txt"));
-        while(scanner.hasNextLine())
-        {
+    private void searchWords() throws IOException {
+        WordTree wordTree = new WordTree();
+        Scanner scanner = new Scanner(new File("rsc/wordlist.txt"));
+        while (scanner.hasNextLine()) {
             String word = scanner.nextLine();
-            if (word.length() > 2) {    // Load only words larger than 3 characters
+            if (word.length() > 2) {    // Load only words larger than 2 characters
                 wordTree.addWord(word);
-                wordSet.add(word);
             }
         }
         scanner.close();
         words = boggle.findWords(wordTree);
     }
 
-    private void viewList(){
-        listView = new ListView<>();
-        items = FXCollections.observableArrayList();
-        for (String e : words) {
-            System.out.println(e);
-            items.add(e);
-        }
-        listView.setItems(items);
-        hBox1.getChildren().addAll(listView);
+    private void viewList() {
+        ObservableList<String> items = FXCollections.observableArrayList();
+        items.addAll(words);
+        ListView<String> listView = new ListView<>(items);
+        hBox1.getChildren().add(listView);
     }
 
-    private void drawingBoard(){
-        for(int i = 0; i<boggle.playingField.length;i++){
-            for(int j=0;j<boggle.playingField.length;j++){
+    private void drawingBoard() {
+        for (int i = 0; i < boggle.playingField.length; i++) {
+            for (int j = 0; j < boggle.playingField.length; j++) {
                 String character = Character.toString(boggle.playingField[i][j]);
-                System.out.println(character);
                 Label text = new Label(character);
-                text.setMinWidth(300/10.0);
-                text.setMaxHeight(300/10.0);
+                text.setMinWidth(300 / 10.0);
+                text.setMaxHeight(300 / 10.0);
                 text.setAlignment(Pos.CENTER);
-                pane.add(text,j,i);
+                pane.add(text, j, i);
             }
         }
     }
 
-
-
-    private void createBoard(int size){
+    private void createBoard(int size) {
         boggle = new Boggle(size);
-        try { searchWords();
-        }catch (IOException ex){ System.out.println("IOExeption error!");}
+        try {
+            searchWords();
+        } catch (IOException ex) {
+            System.out.println("IOExeption error!");
+        }
         pane = new GridPane();
         drawingBoard();
     }
-
-
-
 
     public static void main(String[] args) throws FileNotFoundException {
         launch(args);
     }
 
-
-
-
     @Override
     public void start(Stage stage) throws IOException {
-
-
         TextField textSize = new TextField();
-        setField = new Button("Set");
-        labelsize = new Label("Vul hier de grootte van het bord in:");
-
+        Button setField = new Button("Set");
+        Label labelsize = new Label("Vul hier de grootte van het bord in:");
 //        setField.setOnAction(e-> ButtonClicked(e));
-
 
         //Create MenuBar
         MenuBar menuBar = new MenuBar();
@@ -151,13 +125,12 @@ public class Main extends Application {
         FlowPane pane2 = new FlowPane();
         pane2.setVgap(10);
         pane2.setStyle("-fx-padding: 10px;");
-        pane2.getChildren().addAll(labelsize ,textSize, setField);
-
+        pane2.getChildren().addAll(labelsize, textSize, setField);
 
 
         //Create new scene
-        scene = new Scene(borderPane,300,300);
-        Scene scene2 = new Scene(pane2,300,80);
+        scene = new Scene(borderPane, 300, 300);
+        Scene scene2 = new Scene(pane2, 300, 80);
         newStage = new Stage();
         newStage.setScene(scene2);
         newStage.initModality(Modality.APPLICATION_MODAL);
@@ -184,9 +157,9 @@ public class Main extends Application {
         viewWords.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                try{
+                try {
                     searchWords();
-                }catch (IOException ex){
+                } catch (IOException ex) {
                     System.out.println("IO exception error");
                 }
 
@@ -195,11 +168,11 @@ public class Main extends Application {
                 borderPane.setCenter(pane);
                 borderPane.setBottom(hBox);
                 borderPane.setTop(menuBar);
-                if (boolList ==false){
+                if (boolList == false) {
                     viewList();
                     borderPane.setRight(hBox1);
                     boolList = true;
-                }else{
+                } else {
                     boolList = false;
                 }
                 scene = new Scene(borderPane);
@@ -225,29 +198,6 @@ public class Main extends Application {
                 stage.show();
             }
         });
-
-
-
-
-
-//    WordTree wordTree = new WordTree();
-//    HashSet<String> wordSet = new HashSet<>();
-//    Scanner scanner = new Scanner(new File("rsc/wordlist.txt"));
-//        while(scanner.hasNextLine())
-//
-//    {
-//        String word = scanner.nextLine();
-//        if (word.length() > 2) {    // Load only words larger than 3 characters
-//            wordTree.addWord(word);
-//            wordSet.add(word);
-//        }
-//    }
-//        scanner.close();
-//
-////        Boggle boggle = new Boggle(15);
-//        System.out.println(boggle.toString());
-//        List<String> words = boggle.findWords(wordTree);
-//        System.out.println(words);
     }
 
 }
