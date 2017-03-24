@@ -20,6 +20,8 @@ public class TreeTest {
         }
         scanner.close();
 
+        System.out.println(wordTree.getHeight());
+
         for (String s : wordList) assert wordTree.isWord(s);
     }
 }

@@ -1,13 +1,9 @@
 package net.sentientturtle.boggle;
 
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
 import net.sentientturtle.boggle.tree.TreeNode;
 import net.sentientturtle.boggle.tree.WordTree;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Boggle {
     private Random random = new Random(5);
@@ -35,43 +31,58 @@ public class Boggle {
         }
     }
 
-    public List<String> findWords(WordTree tree) {
-        ArrayList<String> wordList = new ArrayList<>();
+    // Complexity where N = total board tiles
+    // sqrt(n)*sqrt(N) + sqrt(N)*sqrt(N)*X = N+N*X =
+    // N+N*(Y+Y*(1/7)*(8^(Y+1)-1))
+    // TODO: Check math; this seems to collapse onto O(N)
+    public Collection<String> findWords(WordTree tree) {
+        Collection<String> wordList = new HashSet<>();      // 1?
         boolean[][] lookedAt = new boolean[playingField.length][playingField.length];
-        for (int i = 0; i < playingField.length; i++) {
-            for (int j = 0; j < playingField.length; j++) {
-                lookedAt[i][j] = false;
+        for (int i = 0; i < playingField.length; i++) {     // sqrt(N)
+            for (int j = 0; j < playingField.length; j++) { // sqrt(N)
+                lookedAt[i][j] = false;                     // 1
             }
         }
 
-        StringBuilder builder = new StringBuilder();
-        for (int x = 0; x < playingField.length; x++) {
-            for (int y = 0; y < playingField.length; y++) {
-                findWordFrom(x, y, wordList, builder, lookedAt, tree.getRoot());
+        StringBuilder builder = new StringBuilder();        // 1
+        builder.ensureCapacity(tree.getHeight());           // 1
+        for (int x = 0; x < playingField.length; x++) {     // sqrt(N)
+            for (int y = 0; y < playingField.length; y++) { // sqrt(N)
+                findWordFrom(x, y, wordList, builder, lookedAt, tree.getRoot());    // X
             }
         }
         return wordList;
     }
 
-    private void findWordFrom(int x, int y, List<String> wordList, StringBuilder wordStack, boolean[][] lookedAt, TreeNode subtree) {
+    // Complexity: X = Y+8X, where Y < maximum word length, recurses at most Y times, width the last run taking Y, thus:
+    // recursion cases:
+    // c0 = Y = Y
+    // c1 = Y+8Y = Y+Y(8^1)
+    // c2 = Y+8(Y+8Y) = Y+8Y+64Y = Y+Y(1+8+64) = Y+Y(8^0+8^1+8^2)
+    // c3 = Y+8(Y+8(Y+8Y)) = Y+8Y+64Y+512 = Y+Y(8^0+8+64+512) = Y+Y(8^0+8^1+8^2+8^3)
+    // ...
+    // cY = Y+Y(8^0 + 8^1 + 8^2 + 8^3 + ... + 8^Y) =
+    // X = Y + Y * 1/7 * (8^(Y+1)-1) =
+    // Where Y < maximum word length
+    private void findWordFrom(int x, int y, Collection<String> wordList, StringBuilder wordStack, boolean[][] lookedAt, TreeNode subtree) {
         if ((x < 0) || (y < 0) || (x >= playingField.length) || (y >= playingField.length) || lookedAt[x][y]) return;
         lookedAt[x][y] = true;
         TreeNode node = subtree.getNode(playingField[x][y]);
-        wordStack.append(playingField[x][y]);
+        wordStack.append(playingField[x][y]);                       // 1; Capacity is ensured beforehand
         if (node != null) {
-            if (node.isWord()) {
-                wordList.add(wordStack.toString());
+            if (node.isWord()) {                                    // 1
+                wordList.add(wordStack.toString());                 // 1 (HashSet) + N, where N < maximum word length
             }
-            findWordFrom(x - 1, y - 1, wordList, wordStack, lookedAt, node);             // Top left
-            findWordFrom(x - 1, y, wordList, wordStack, lookedAt, node);                    // Left
-            findWordFrom(x - 1, y + 1, wordList, wordStack, lookedAt, node);             // Bottom left
-            findWordFrom(x, y - 1, wordList, wordStack, lookedAt, node);                    // Top
-            findWordFrom(x, y + 1, wordList, wordStack, lookedAt, node);                    // Bottom
-            findWordFrom(x + 1, y - 1, wordList, wordStack, lookedAt, node);             // Top right
-            findWordFrom(x + 1, y, wordList, wordStack, lookedAt, node);                    // Right
-            findWordFrom(x + 1, y + 1, wordList, wordStack, lookedAt, node);             // Bottom right
+            findWordFrom(x - 1, y - 1, wordList, wordStack, lookedAt, node);             // Top left        X
+            findWordFrom(x - 1, y, wordList, wordStack, lookedAt, node);                    // Left            X
+            findWordFrom(x - 1, y + 1, wordList, wordStack, lookedAt, node);             // Bottom left     X
+            findWordFrom(x, y - 1, wordList, wordStack, lookedAt, node);                    // Top             X
+            findWordFrom(x, y + 1, wordList, wordStack, lookedAt, node);                    // Bottom          X
+            findWordFrom(x + 1, y - 1, wordList, wordStack, lookedAt, node);             // Top right       X
+            findWordFrom(x + 1, y, wordList, wordStack, lookedAt, node);                    // Right           X
+            findWordFrom(x + 1, y + 1, wordList, wordStack, lookedAt, node);             // Bottom right    X
         }
-        wordStack.setLength(wordStack.length() - 1);
+        wordStack.setLength(wordStack.length() - 1);                // 1; Capacity is ensured beforehand
         lookedAt[x][y] = false;
     }
 

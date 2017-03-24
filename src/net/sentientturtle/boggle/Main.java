@@ -22,6 +22,7 @@ import net.sentientturtle.boggle.tree.WordTree;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
@@ -39,7 +40,7 @@ public class Main extends Application {
     Stage stage;
     BorderPane borderPane;
     Scene scene;
-    List<String> words;
+    Collection<String> words;
     HBox hBox1;
     private boolean boolList = false;
     ListView<String> listView;
@@ -67,7 +68,7 @@ public class Main extends Application {
     }
 
     private void viewList(){
-        listView = new ListView<String>();
+        listView = new ListView<>();
         items = FXCollections.observableArrayList();
         for (String e : words) {
             System.out.println(e);

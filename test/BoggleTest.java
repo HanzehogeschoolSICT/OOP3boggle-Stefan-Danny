@@ -4,8 +4,8 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Scanner;
 
 public class BoggleTest {
@@ -27,7 +27,7 @@ public class BoggleTest {
     @Test
     public void testWordSearch() {  // Test to see all found words are in the word list
         Boggle boggle = new Boggle(15);
-        List<String> words = boggle.findWords(wordTree);
+        Collection<String> words = boggle.findWords(wordTree);
 
         for (String word : words) assert wordSet.contains(word);
     }
