@@ -1,5 +1,8 @@
 package net.sentientturtle.boggle.tree;
 
+/**
+ * WordTree Node object
+ */
 public class TreeNode {
     private TreeNode[] nodes;
     private boolean isWord;
@@ -31,10 +34,19 @@ public class TreeNode {
         }
     }
 
+    /**
+     * Returns the subnode represented by a given char
+     * @param c Char to look up
+     * @return Subnode for the given char, or null
+     */
     public TreeNode getNode(char c) {
         return nodes[c - 97];
     }
 
+    /**
+     * Returns true if this TreeNode marks the end of a word
+     * @return True if this node marks the end of a word
+     */
     public boolean isWord() {
         return isWord;
     }

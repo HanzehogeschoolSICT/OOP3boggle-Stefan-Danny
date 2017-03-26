@@ -95,7 +95,6 @@ public class Main extends Application {
         TextField textSize = new TextField();
         Button setField = new Button("Set");
         Label labelsize = new Label("Vul hier de grootte van het bord in:");
-//        setField.setOnAction(e-> ButtonClicked(e));
 
         //Create MenuBar
         MenuBar menuBar = new MenuBar();
@@ -121,12 +120,10 @@ public class Main extends Application {
         borderPane.setBottom(hBox);
         borderPane.setTop(menuBar);
 
-
         FlowPane pane2 = new FlowPane();
         pane2.setVgap(10);
         pane2.setStyle("-fx-padding: 10px;");
         pane2.getChildren().addAll(labelsize, textSize, setField);
-
 
         //Create new scene
         scene = new Scene(borderPane, 300, 300);
@@ -138,7 +135,6 @@ public class Main extends Application {
         // set the Scene to stage
         stage.setScene(scene);
 
-
         stage.setTitle("Boggle");
 
         newStage.show();
@@ -146,59 +142,46 @@ public class Main extends Application {
 
         newBoard.setOnAction(event -> newStage.showAndWait());
 
-        closeApp.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                stage.close();
+        closeApp.setOnAction(event -> stage.close());
+
+        viewWords.setOnAction(event -> {
+            try {
+                searchWords();
+            } catch (IOException ex) {
+                System.out.println("IO exception error");
             }
+
+            hBox1 = new HBox();
+            BorderPane borderPane1 = new BorderPane();
+            borderPane1.setCenter(pane);
+            borderPane1.setBottom(hBox);
+            borderPane1.setTop(menuBar);
+            if (!boolList) {
+                viewList();
+                borderPane1.setRight(hBox1);
+                boolList = true;
+            } else {
+                boolList = false;
+            }
+            scene = new Scene(borderPane1);
+            stage.setScene(scene);
+
         });
 
+        setField.setOnAction(event -> {
+            getSize = Integer.parseInt(textSize.getText());
 
-        viewWords.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    searchWords();
-                } catch (IOException ex) {
-                    System.out.println("IO exception error");
-                }
-
-                hBox1 = new HBox();
-                BorderPane borderPane = new BorderPane();
-                borderPane.setCenter(pane);
-                borderPane.setBottom(hBox);
-                borderPane.setTop(menuBar);
-                if (boolList == false) {
-                    viewList();
-                    borderPane.setRight(hBox1);
-                    boolList = true;
-                } else {
-                    boolList = false;
-                }
-                scene = new Scene(borderPane);
-                stage.setScene(scene);
-
-            }
-        });
-
-        setField.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                getSize = Integer.parseInt(textSize.getText());
-
-                createBoard(getSize);
-                BorderPane borderPane = new BorderPane();
-                borderPane.setCenter(pane);
-                borderPane.setBottom(hBox);
-                borderPane.setTop(menuBar);
-                pane.setGridLinesVisible(true);
-                scene = new Scene(borderPane);
-                stage.setScene(scene);
-                newStage.close();
-                stage.show();
-            }
+            createBoard(getSize);
+            BorderPane borderPane12 = new BorderPane();
+            borderPane12.setCenter(pane);
+            borderPane12.setBottom(hBox);
+            borderPane12.setTop(menuBar);
+            pane.setGridLinesVisible(true);
+            scene = new Scene(borderPane12);
+            stage.setScene(scene);
+            newStage.close();
+            stage.show();
         });
     }
-
 }
 

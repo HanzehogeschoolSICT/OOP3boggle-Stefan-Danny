@@ -1,0 +1,37 @@
+Evaluatie bettercodehub:
+Write Short Units of Code:
+    Main.start: Deze methode is zeer lang, omdat hier de hele GUI gedeclareerd word. Dit is te verbeteren door de events als inner klasses te declareren
+        En door FXML te gebruiken
+    Boggle.findWordFrom:
+        Deze methode is lang omdat de recursive call naar de omliggende tegels niet in een loop plaats vind.
+Keep Unit Interfaces Small:
+    Boggle.findWordFrom(int,int,List,StringBuilder,boolean[][],TreeNode):
+        De parameters in deze methode worden gebruikt om de gevonden worden bij te houden, de al doorzochte letters, en de locatie in de WordTree bij te houden
+        Deze kunnen verplaatst worden naar velden, maar dit maakt de code moeilijker om te lezen.
+Keep Architecture Components Balanced:
+    De source map word herkend als een component.
+    De code is opgesplitst in the packages boggle en boggle.tree, hiermee word de generieke WordTree code afgesplitst van de code die het Boggle spel aanlevert.
+
+
+Evaluatie code complexiteit:
+Het algoritme om een lijst met woorden te vinden in een gegeven speelveld heeft de complexiteit O(n), waar n het aantal letters op het speelveld is.
+De diepte van de recursie van dit algoritme is afhankelijk van de woordenlijst, en is dus een constante. Verder wordt er vanaf iedere tegel gezocht.
+
+    // Complexity where n = total board tiles
+    // n + sqrt(n)*sqrt(n)*X = n+n*X =
+    // n+n*(14+ Y*(1/7)*(8^(Y+1)-1))
+    // Where Y <= maximum word length (Max: 25, AVG from benchmarks: 3)
+    // Thus: O(n)
+    public Collection<String> findWords(WordTree tree) {
+
+    // Complexity: X = Y+8X, where Y < maximum word length, recurses at most Y times, width the last run taking Y, thus:
+    // recursion cases:
+    // c0 = Y = Y
+    // c1 = Y+8Y = Y(1+8) = Y(8^0+8^1)
+    // c2 = Y+8(Y+8Y) = Y+8Y+64Y = Y(1+8+64) = Y(8^0+8^1+8^2)
+    // c3 = Y+8(Y+8(Y+8Y)) = Y+8Y+64Y+512 = Y(8^0+8+64+512) = Y(8^0+8^1+8^2+8^3)
+    // ...
+    // cY = Y(8^0 + 8^1 + 8^2 + 8^3 + ... + 8^Y) = Y * (1/7) * (8^(Y+1)-1)
+    // X = Y*(1/7)*(8^(Y+1)-1)
+    // Where Y <= maximum word length
+    private void findWordFrom(int x, int y, Collection<String> wordList, StringBuilder wordStack, boolean[][] lookedAt, TreeNode subtree) {

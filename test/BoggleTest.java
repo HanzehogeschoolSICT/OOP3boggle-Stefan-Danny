@@ -26,13 +26,13 @@ public class BoggleTest {
 
     @Test
     public void testWordSearch() {  // Test to see all found words are in the word list
-        Boggle boggle = new Boggle(15);
+        Boggle boggle = new Boggle(150);
         Collection<String> words = boggle.findWords(wordTree);
 
         for (String word : words) assert wordSet.contains(word);
     }
 
-    @Test
+    //@Test
     public void benchmarkSearch() {
         Boggle boggle;
         for (int i = 64; i <= 35*64; i+= 64) {
